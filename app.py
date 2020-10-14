@@ -69,7 +69,8 @@ class GetTimer(Resource):
             })
         
         return jsonify({
-            "status": 201
+            "status": 201,
+            "msg": "test message"
         })
 
 
