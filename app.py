@@ -7,7 +7,7 @@ from flask_cors import CORS
 
 # handle .env
 from dotenv import load_dotenv
-# import os
+import os
 
 # handle "_id" field from string
 from bson.objectid import ObjectId
@@ -17,7 +17,7 @@ app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
-client = MongoClient("mongodb://localhost:27017")
+client = MongoClient(os.environ["MONGODB_URI"])
 db = client["locationDB"]
 junction = db["junction"]
 
