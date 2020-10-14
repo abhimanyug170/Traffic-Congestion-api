@@ -27,14 +27,14 @@ class Junctions(Resource):
     def post(self):
         posted_data = request.get_json()
 
-        _id = junction.insert_one({
+        result = junction.insert_one({
             "coordinate": posted_data["coordinate"],
             "roads": posted_data["roads"]
         })
 
         return jsonify({
             "status": 200,
-            "_id": str(_id)
+            "_id": str(result.inserted_id)
         })
 
     # read all
