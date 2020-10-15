@@ -12,7 +12,7 @@ import os
 
 # handle "_id" field from string
 from bson.objectid import ObjectId
-import json
+# import json
 
 # import auxillary file
 from congestion import get_signal_times
@@ -99,8 +99,8 @@ class GetTimer(Resource):
         
         normal_times = [] 
         traffic_times = []
-
-        for i in range(4):
+        
+        for i in range(len(response["rows"][0]["elements"])):
             if i == index and index != -1:
                 continue
             normal_times.append(response["rows"][0]["elements"][i]["duration"]["value"])
