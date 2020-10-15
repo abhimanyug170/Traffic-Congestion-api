@@ -81,14 +81,13 @@ class GetTimer(Resource):
         # make api request to distance-API
         key = os.environ["API_KEY"]
         url = "https://api.distancematrix.ai/maps/api/distancematrix/json"
-        dest = ""
+        source = ""
         for road in cur_junction["roads"]:
-            dest = dest + str(road["lat"]) + "," + str(road["lon"]) + "|"
-        print(dest)
-        print("\n\n\n")
+            source = source + str(road["lat"]) + "," + str(road["lon"]) + "|"
+        
         params = {
-            "origins": str(cur_junction["coordinate"]["lat"]) + "," + str(cur_junction["coordinate"]["lon"]),
-            "destinations": dest[:-1],
+            "origins": source[:-1],
+            "destinations": str(cur_junction["coordinate"]["lat"]) + "," + str(cur_junction["coordinate"]["lon"]),
             "mode": "driving",
             "departure_time": "now",
             "traffic_model": "pessimistic",
@@ -104,8 +103,8 @@ class GetTimer(Resource):
         for i in range(4):
             if i == index and index != -1:
                 continue
-            normal_times.append(response["rows"][0]["elements"][i]["duration"]["value"])
-            traffic_times.append(response["rows"][0]["elements"][i]["duration_in_traffic"]["value"])
+            normal_times.append(response["rows"][i]["elements"][0]["duration"]["value"])
+            traffic_times.append(response["rows"][i]["elements"][0]["duration_in_traffic"]["value"])
         
         # use algorithm
         signal_time, _ = get_signal_times(normal_times, traffic_times)
