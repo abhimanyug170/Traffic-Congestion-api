@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
 from pymongo import MongoClient
+import requests
 
 # to handle CORS error
 from flask_cors import CORS
@@ -11,6 +12,10 @@ import os
 
 # handle "_id" field from string
 from bson.objectid import ObjectId
+import json
+
+# import auxillary file
+from congestion import get_signal_times
 
 
 app = Flask(__name__)
@@ -29,7 +34,8 @@ class Junctions(Resource):
 
         result = junction.insert_one({
             "coordinate": posted_data["coordinate"],
-            "roads": posted_data["roads"]
+            "roads": posted_data["roads"],
+            "name": posted_data["name"]
         })
 
         return jsonify({
@@ -45,6 +51,7 @@ class Junctions(Resource):
         for jn in junctions:
             ret.append({
                 "_id": str(jn["_id"]),
+                "name": jn["name"],
                 "coordinate": jn["coordinate"],
                 "roads": jn["roads"]
             })
@@ -67,6 +74,23 @@ class GetTimer(Resource):
                 "status": 404,
                 "msg": "junction not found"
             })
+        """
+        # make api request to distance-API
+        key = os.environ["API_KEY"]
+        url = "https://api.distancematrix.ai/maps/api/distancematrix/json"
+        dest = ""
+        for road in cur_junction["roads"]:
+            dest + f"{road[""]}"
+
+        headers = {
+            "origins": f"{cur_junction["coordinate"]["lat"]},{cur_junction["coordinate"]["lon"]}",
+            "destinations": f"",
+            "mode": 12,
+            "departure_time": 12,
+            "traffic_model": 12,
+            "key": key
+        }
+        """
         
         return jsonify({
             "status": 201,
