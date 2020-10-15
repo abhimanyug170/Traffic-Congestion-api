@@ -12,7 +12,7 @@ import os
 
 # handle "_id" field from string
 from bson.objectid import ObjectId
-import json
+# import json
 
 # import auxillary file
 from congestion import get_signal_times

@@ -6,4 +6,3 @@ python-dotenv
 gunicorn
 dnspython
 flask_cors
-json
