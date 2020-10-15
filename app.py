@@ -81,13 +81,14 @@ class GetTimer(Resource):
         # make api request to distance-API
         key = os.environ["API_KEY"]
         url = "https://api.distancematrix.ai/maps/api/distancematrix/json"
-        origin = ""
+        dest = ""
         for road in cur_junction["roads"]:
-            origin = origin + str(road["lat"]) + "," + str(road["lon"]) + "|"
-        
+            dest = dest + str(road["lat"]) + "," + str(road["lon"]) + "|"
+        print(dest)
+        print("\n\n\n")
         params = {
-            "origins": origin[:-1],
-            "destinations": str(cur_junction["coordinate"]["lat"]) + "," + str(cur_junction["coordinate"]["lon"]),
+            "origins": str(cur_junction["coordinate"]["lat"]) + "," + str(cur_junction["coordinate"]["lon"]),
+            "destinations": dest[:-1],
             "mode": "driving",
             "departure_time": "now",
             "traffic_model": "pessimistic",
