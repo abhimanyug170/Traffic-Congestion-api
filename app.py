@@ -12,7 +12,7 @@ import os
 
 # handle "_id" field from string
 from bson.objectid import ObjectId
-# import json
+import json
 
 # import auxillary file
 from congestion import get_signal_times
@@ -64,7 +64,10 @@ class Junctions(Resource):
 
 class GetTimer(Resource):
     # return timer values for all sides of a junction
-    def get(self, _id):
+    def get(self):
+        _id = request.args.get("_id")
+        index = int(request.args.get("index"))
+
         cur_junction = junction.find_one({
             "_id": ObjectId(_id)
         })
@@ -74,32 +77,47 @@ class GetTimer(Resource):
                 "status": 404,
                 "msg": "junction not found"
             })
-        """
+        
         # make api request to distance-API
         key = os.environ["API_KEY"]
         url = "https://api.distancematrix.ai/maps/api/distancematrix/json"
         dest = ""
         for road in cur_junction["roads"]:
-            dest + f"{road[""]}"
-
-        headers = {
-            "origins": f"{cur_junction["coordinate"]["lat"]},{cur_junction["coordinate"]["lon"]}",
-            "destinations": f"",
-            "mode": 12,
-            "departure_time": 12,
-            "traffic_model": 12,
+            dest = dest + str(road["lat"]) + "," + str(road["lon"]) + "|"
+        
+        params = {
+            "origins": str(cur_junction["coordinate"]["lat"]) + "," + str(cur_junction["coordinate"]["lon"]),
+            "destinations": dest[:-1],
+            "mode": "driving",
+            "departure_time": "now",
+            "traffic_model": "pessimistic",
             "key": key
         }
-        """
         
+        # make api call
+        response = requests.get(url, params=params).json()
+        
+        normal_times = [] 
+        traffic_times = []
+
+        for i in range(4):
+            if i == index and index != -1:
+                continue
+            normal_times.append(response["rows"][0]["elements"][i]["duration"]["value"])
+            traffic_times.append(response["rows"][0]["elements"][i]["duration_in_traffic"]["value"])
+        
+        # use algorithm
+        signal_time, _ = get_signal_times(normal_times, traffic_times)
+        if index != -1:
+            signal_time.insert(index, 0)
+
         return jsonify({
-            "status": 201,
-            "msg": "test message"
+            "signal_time": signal_time
         })
 
 
 api.add_resource(Junctions, "/junctions")
-api.add_resource(GetTimer, "/get-timer/<_id>")
+api.add_resource(GetTimer, "/get-timer")
 
 if __name__ == "__main__":
     app.run(port=5000)
