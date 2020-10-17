@@ -116,7 +116,12 @@ class GetTimer(Resource):
         })
 
 
+class Home(Resource):
+    def get(self):
+        return "Server Home;    endpoints: /junctions, /get-timer"
+
 api.add_resource(Junctions, "/junctions")
+api.add_resource(Home, "/")
 api.add_resource(GetTimer, "/get-timer")
 
 if __name__ == "__main__":
